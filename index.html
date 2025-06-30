@@ -1,0 +1,122 @@
+<!-- index.html actualizado y sincronizado con el script.js -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario Tienda Musical</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <!-- HEADER + NAVBAR -->
+  <header id="main-header">
+    <h1 class="site-title">¡Bienvenido al Sistema de Control de Inventario!</h1>
+    <nav id="navbar" class="navbar">
+      <div>
+        <h2 class="nombre_Tienda">ALLEGRO</h2>
+        <h4>Tienda de Música</h4>
+      </div>
+      <a href="index.html" onclick="navegarConTransicion('index.html')">Añadir</a>
+      <a href="catálogo.html" onclick="navegarConTransicion('catálogo.html')">Catálogo</a>
+      <a href="actualizar.html" onclick="navegarConTransicion('actualizar.html')">Actualizar <br>Inventario</a>
+
+    </nav>
+  </header>
+
+  <!-- SECCIÓN PRINCIPAL -->
+  <main class="main-container">
+    <!-- FORMULARIO DE INVENTARIO -->
+    <section id="form-section">
+      <h3>Anadir producto</h3><br>
+      <form id="inventory-form">
+
+        <label for="idProducto">ID</label>
+        <input id="idProducto" class="form-control" type="text" readonly />
+
+        <label for="nombre">Nombre</label>
+        <input id="nombre" class="form-control" required />
+
+        <label for="categoria">Categoría</label>
+        <select id="categoria" class="form-select" required>
+          <option value="">-- Selecciona --</option>
+          <option>Instrumentos de Viento</option>
+          <option>Instrumentos de Percusión</option>
+          <option>Instrumentos de Cuerda</option>
+          <option>Instrumentos Eléctricos</option>
+        </select>
+
+        <label for="precio">Precio</label>
+        <input id="precio" class="form-control" type="number" required />
+
+        <label for="cantidad">Cantidad disponible</label>
+        <input id="cantidad" class="form-control" type="number" required />
+
+        <label for="fecha">Fecha de entrada</label>
+        <input id="fecha" class="form-control" type="date" required />
+
+        <fieldset>
+          <legend>Estado</legend>
+          <label><input type="radio" name="estado" value="Nuevo" checked /> Nuevo</label>
+          <label><input type="radio" name="estado" value="Usado" /> Usado</label>
+        </fieldset>
+
+        <label for="descripcion">Descripción (opcional)</label>
+        <textarea id="descripcion" class="form-control"></textarea>
+
+        <label for="imagenURL">URL de la imagen</label>
+        <input id="imagenURL" class="form-control" type="url" required />
+        <button id="btn-add" class="btn btn-primary" type="submit">Agregar</button>
+        <div id="alert-success" class="alert">Producto agregado con éxito</div>
+        <br><br><br>
+      </form>
+    </section>
+
+    <!-- LISTADO DE Últimos productos -->
+    <aside id="ultimos-productos">
+      <h3>Últimos productos agregados</h3>
+      <ul id="lista-ultimos"></ul>
+    </aside>
+  </main>
+
+  <!-- FOOTER -->
+  <footer id="main-footer">
+    <p>&copy;2025 Desarrollado por Vanesa Carrillo</p>
+  </footer>
+
+
+  <!--navegarConTransicion-->
+  <script>
+    function navegarConTransicion(url) {
+      document.body.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = url;
+      }, 400);
+    }
+
+    // Detecta la página actual y aplica "active" al enlace correspondiente (soporte para tildes)
+    const path = decodeURIComponent(window.location.pathname);
+    document.querySelectorAll('#navbar a').forEach(link => {
+      const href = link.getAttribute('href');
+      if (path.includes(href)) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  </script>
+
+
+  <script src="script.js"></script>
+</body>
+
+</html>

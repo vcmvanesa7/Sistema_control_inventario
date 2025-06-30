@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catálogo | Tienda Musical</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- HEADER + NAVBAR -->
+    <header id="main-header">
+        <h1 class="site-title">Catálogo</h1>
+        <nav id="navbar" class="navbar">
+            <div>
+                <h2 class="nombre_Tienda">ALLEGRO</h2>
+                <h4>Tienda de Música</h4>
+            </div>
+            <a href="index.html" onclick="navegarConTransicion('index.html')">Añadir</a>
+            <a href="catálogo.html" onclick="navegarConTransicion('catálogo.html')">Catálogo</a>
+            <a href="actualizar.html" onclick="navegarConTransicion('actualizar.html')">Actualizar <br>Inventario</a>
+        </nav>
+    </header>
+
+
+    <!-- SECCIÓN PRINCIPAL -->
+    <main>
+        <!-- CATÁLOGO -->
+        <section id="catalogo">
+            <h4>Filtro por Categoría</h4>
+            <select id="filtro-catalogo">
+                <option value="">Todos</option>
+                <option>Instrumentos de Viento</option>
+                <option>Instrumentos de Percusión</option>
+                <option>Instrumentos de Cuerda</option>
+                <option>Instrumentos Eléctricos</option>
+            </select>
+            <div id="product-list" class="grid-catalogo"></div>
+            <p id="total-price">Total: $0</p>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="main-footer">
+            <p>&copy;2025 Desarrollado por Vanesa Carrillo</p>
+        </footer>
+    </main>
+
+    <!--navegarConTransicion-->
+    <script>
+        function navegarConTransicion(url) {
+            document.body.classList.add("fade-out");
+            setTimeout(() => {
+                window.location.href = url;
+            }, 400);
+        }
+
+        // Detecta la página actual y aplica "active" al enlace correspondiente (soporte para tildes)
+        const path = decodeURIComponent(window.location.pathname);
+        document.querySelectorAll('#navbar a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (path.includes(href)) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    </script>
+
+
+    <script src="./script.js"></script>
+</body>
+
+</html>
