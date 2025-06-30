@@ -14,7 +14,7 @@
 
 ## 🔗 Demo en Vivo
 
-🚧 *([agregar URL Netlify](https://snazzy-monstera-3e1644.netlify.app/))*
+🚧 *(https://snazzy-monstera-3e1644.netlify.app/)*
 
 ---
 
