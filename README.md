@@ -44,8 +44,6 @@ Listo, ¡empieza a añadir productos!
 ---
 
 ## 📁 Estructura del Proyecto
-
-```
 /
 ├── index.html               # Página principal para añadir productos
 ├── catálogo.html            # Página visualización y filtro del catálogo existente
