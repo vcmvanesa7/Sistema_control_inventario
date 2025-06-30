@@ -8,7 +8,7 @@
 
 ![Vista Previa del Proyecto](assets/img/Añadir.png)
 ![Vista 2](assets/img/Catálogo.png)
-![Vista 2](assets/img/Actualizar-inventario.png)
+![Vista 3](assets/img/Actualizar-inventario.png)
 
 ---
 
@@ -33,7 +33,7 @@ Clona este repositorio:
 bash
 Copiar
 Editar
-git clone https://github.com/tu-usuario/inventario-musical.git
+git clone (https://github.com/vcmvanesa7/Sistema_control_inventario.git)
 Abre cualquiera de las páginas (index.html, catálogo.html, actualizar.html) en tu navegador favorito.
 
 Listo, ¡empieza a añadir productos!
