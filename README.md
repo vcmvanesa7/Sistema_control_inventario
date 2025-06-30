@@ -1,4 +1,4 @@
-# 🎵 Sistema de Inventario para Tienda Musical - ALLEGRO
+# 💻​ Sistema de Inventario para Tienda Musical - ALLEGRO
 
 ![HTML5](assets/img/Previsualización-HTML.png)
 ![CSS3](assets/img/previsualización-CSS.png)
