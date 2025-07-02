@@ -118,13 +118,6 @@ Está diseñado para reforzar conceptos fundamentales de HTML, CSS y JavaScript 
 Puedes clonar, estudiar, modificar y compartir este repositorio libremente.
 Si decides usar este proyecto como base para tus propios aprendizajes o ejercicios, ¡me encantaría verlo!
 
-#  📌 Nota
-Este proyecto no está destinado a producción comercial, sino a la práctica de habilidades técnicas dentro de un entorno de formación.
-Sin embargo, todo el código está disponible bajo la Licencia MIT, por lo que puedes usarlo en tus propios proyectos respetando dicha licencia.
-
-## 📄 Licencia
-Este proyecto está bajo la Licencia MIT.
-
 ---
 
 ⭐️ Desarrollado por **Vanesa Carrillo** — ¡Gracias por revisar mi trabajo! ⭐️
