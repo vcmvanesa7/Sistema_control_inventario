@@ -29,10 +29,6 @@
 
 ## 🧪 Cómo ejecutar el proyecto
 Clona este repositorio:
-
-bash
-Copiar
-Editar
 git clone (https://github.com/vcmvanesa7/Sistema_control_inventario.git)
 Abre cualquiera de las páginas (index.html, catálogo.html, actualizar.html) en tu navegador favorito.
 
