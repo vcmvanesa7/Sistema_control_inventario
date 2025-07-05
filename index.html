@@ -41,10 +41,10 @@
       <form id="inventory-form">
 
         <label for="idProducto">ID</label>
-        <input id="idProducto" class="form-control" type="text" readonly />
+        <input id="idProducto" class="form-control" type="text" readonly placeholder="Generado Automáticamente" />
 
         <label for="nombre">Nombre</label>
-        <input id="nombre" class="form-control" required />
+        <input id="nombre" class="form-control" required placeholder="Escribe el nombre del instrumento" />
 
         <label for="categoria">Categoría</label>
         <select id="categoria" class="form-select" required>
@@ -56,10 +56,12 @@
         </select>
 
         <label for="precio">Precio</label>
-        <input id="precio" class="form-control" type="number" required />
+        <input id="precio" class="form-control" type="number" required
+          placeholder="Ingresa el precio sin puntos '.' comas ',' o 'caracteres especiales'" />
 
         <label for="cantidad">Cantidad disponible</label>
-        <input id="cantidad" class="form-control" type="number" required />
+        <input id="cantidad" class="form-control" type="number" required
+          placeholder="Escribe la cantidad de unidades que ingresan" />
 
         <label for="fecha">Fecha de entrada</label>
         <input id="fecha" class="form-control" type="date" required />
@@ -74,7 +76,8 @@
         <textarea id="descripcion" class="form-control"></textarea>
 
         <label for="imagenURL">URL de la imagen</label>
-        <input id="imagenURL" class="form-control" type="url" required />
+        <input id="imagenURL" class="form-control" type="url" required
+          placeholder="Copia aquí el link en línea de la imagen del producto" />
         <button id="btn-add" class="btn btn-primary" type="submit">Agregar</button>
         <div id="alert-success" class="alert">Producto agregado con éxito</div>
         <br><br><br>
@@ -102,6 +105,10 @@
         window.location.href = url;
       }, 400);
     }
+    // Aplica la clase fade-in al cargar para que aparezca suave
+    window.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("fade-in");
+    });
 
     // Detecta la página actual y aplica "active" al enlace correspondiente (soporte para tildes)
     const path = decodeURIComponent(window.location.pathname);
@@ -116,7 +123,8 @@
   </script>
 
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
+
 </body>
 
 </html>

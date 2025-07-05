@@ -1,4 +1,18 @@
-// Prefijos por categoría
+/**
+ * script.js
+ * Control de Inventario Tienda Musical
+ *
+ * Flujo general:
+ * 1. obtenerProductos() — GET /productos
+ * 2. renderCatalogo(), renderUltimos(), renderEditar() — muestran datos
+ * 3. guardarProducto() — POST o PUT según creación o edición
+ * 4. eliminarProducto() — DELETE /productos/:id
+ * 5. modificarCantidad() — ajuste de cantidad y PUT
+ * 6. mostrar alertas de éxito o error
+ * 7. Exposición de funciones globales y renderizado inicial
+ */
+
+// Prefijos según categoría para los IDs
 const PREFIX = {
     "Instrumentos de Viento": "IV",
     "Instrumentos de Percusión": "IP",
@@ -6,49 +20,9 @@ const PREFIX = {
     "Instrumentos Eléctricos": "IE"
 };
 
-// Productos iniciales o desde localStorage
-let productos = JSON.parse(localStorage.getItem("productos")) || {
-    producto1: {
-        id: "IV001",
-        nombre: "Saxofón Alto",
-        categoria: "Instrumentos de Viento",
-        precio: 350000,
-        cantidad: 5,
-        fecha: "2025-06-01",
-        estado: "Nuevo",
-        descripcion: "Saxofón de latón profesional.",
-        imagen: "https://tse3.mm.bing.net/th/id/OIP.Zhd27gKoPSQ1a1FE1JO2igAAAA?rs=1&pid=ImgDetMain"
-    },
-    producto2: {
-        id: "IP001",
-        nombre: "Tambor Africano",
-        categoria: "Instrumentos de Percusión",
-        precio: 120000,
-        cantidad: 8,
-        fecha: "2025-05-20",
-        estado: "Nuevo",
-        descripcion: "Tambor manual de madera y piel auténtica.",
-        imagen: "https://thumbs.dreamstime.com/b/tambor-africano-25975560.jpg"
-    },
-    producto3: {
-        id: "IC001",
-        nombre: "Violín Clásico",
-        categoria: "Instrumentos de Cuerda",
-        precio: 450000,
-        cantidad: 3,
-        fecha: "2025-04-15",
-        estado: "Usado",
-        descripcion: "Violín con acabado barnizado, estado bueno.",
-        imagen: "https://thumbs.dreamstime.com/z/violin-2742015.jpg?w=768"
-    }
-};
+const API_URL = "http://localhost:3000/productos";
 
-// Guarda productos en localStorage
-function guardarProductos() {
-    localStorage.setItem("productos", JSON.stringify(productos));
-}
-
-// Obtener elementos DOM (pueden no existir en todas las páginas)
+// Referencia a elementos del DOM
 const form = document.getElementById("inventory-form");
 const selectCat = document.getElementById("categoria");
 const inputId = document.getElementById("idProducto");
@@ -61,25 +35,137 @@ const filtroEditar = document.getElementById("filtro-editar");
 const filtroCategoriaEdit = document.getElementById("filtro-categoria-editar");
 const editarLista = document.getElementById("editar-lista");
 
-// Genera ID único según categoría
-function generarID(categoria) {
+// Validación de campo precio: se asegura que el usuario solo pueda ingresar números enteros (sin puntos, comas ni letras)
+const inputPrecio = document.getElementById("precio");
+if (inputPrecio) {
+    inputPrecio.addEventListener("input", () => {
+        // Reemplaza todo lo que no sea un número entero
+        inputPrecio.value = inputPrecio.value.replace(/[^\d]/g, "");
+    });
+}
+
+/**
+ * Función utilitaria que detecta la página actual
+ * y renderiza solo lo necesario según sea:
+ * - index.html → muestra últimos productos
+ * - catálogo.html → muestra el catálogo completo
+ * - actualizar.html → muestra lista editable
+ */
+function renderizarSoloLoNecesario() {
+    const pagina = window.location.pathname;
+    if (pagina.includes("index")) {
+        renderUltimos();
+    } else if (pagina.includes("catálogo")) {
+        renderCatalogo();
+    } else if (pagina.includes("actualizar")) {
+        renderEditar();
+    }
+}
+
+// Se obtienen todos los productos del servidor con una petición GET
+async function obtenerProductos() {
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        // Mostrar en consola los productos solo para fines de desarrollo
+        console.log("📦 Productos actuales (carga inicial):", data);
+
+        return data;
+    } catch (error) {
+        console.error("🚨 Error al obtener productos:", error);
+        return []; // Retorna un arreglo vacío si hay error para evitar que la app se rompa
+    }
+}
+
+
+// Se envía los datos al servidor con POST para crear o PUT para actualizar
+async function guardarProducto(producto, editKey = null) {
+    const options = {
+        method: editKey ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(producto)
+    };
+    const url = editKey ? `${API_URL}/${editKey}` : API_URL;
+    await fetch(url, options);
+    console.log(editKey ? "✏️ Producto actualizado:" : "🆕 Producto agregado:", producto);
+}
+
+
+// Se elimina un producto mediante DELETE y vuelve a renderizar lo necesario
+async function eliminarProducto(id) {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    console.log("🗑️ Producto eliminado con ID:", id);
+    renderEditar;
+}
+
+/**
+ * Se modifica la cantidad de un producto específico (sumando o restando) 
+ * sin volver a renderizar toda la lista.
+ * 
+ * Actualiza solo el <li> correspondiente del DOM para evitar recargas visuales innecesarias
+ * y aplica una animación suave con la clase 'cantidad-actualizada' para mejorar la experiencia del usuario.
+ * 
+ * Además, recalcula y actualiza el total del inventario sin reconstruir la lista completa.
+ * 
+ * Ventajas:
+ * - Mejora el rendimiento (no se vuelve a renderizar toda la lista).
+ * - Elimina el efecto de "doble brinco" o parpadeo.
+ * - Agrega una experiencia visual más fluida y profesional.
+ */
+
+async function modificarCantidad(id, delta) {
+    const productos = await obtenerProductos();
+    const p = productos.find(item => item.id === id);
+    if (!p) return;
+    p.cantidad = Math.max(0, p.cantidad + delta);
+    console.log(`🔄 Cantidad actualizada para ${id}: ${p.cantidad} (${delta > 0 ? "+1" : "-1"})`);
+    await guardarProducto(p, p.id);
+
+    // Encuentra el <li> correspondiente
+    const liList = editarLista.querySelectorAll("li");
+    liList.forEach(li => {
+        if (li.innerHTML.includes(p.id)) {
+            li.innerHTML = `
+                <strong>${p.nombre}</strong> (${p.id}) - ${p.categoria}<br>
+                Cantidad: ${p.cantidad} | Precio: $${p.precio.toLocaleString()}<br>
+                <button onclick="modificarCantidad('${p.id}', 1)">+1</button>
+                <button onclick="modificarCantidad('${p.id}', -1)">-1</button>
+                <button onclick="editarProductoDesdeOtraPagina('${p.id}')">Editar</button>
+                <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
+            `;
+            li.classList.add("cantidad-actualizada");
+            setTimeout(() => li.classList.remove("cantidad-actualizada"), 500);
+        }
+    });
+
+    // Recalcular solo el total general
+    const total = productos.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
+    const totalInventario = document.getElementById("total-inventario");
+    if (totalInventario) {
+        totalInventario.textContent = `Total del Inventario: $${total.toLocaleString()}`;
+        console.log("📊 Total actualizado del inventario:", total);
+    }
+}
+
+
+/**
+ * Se Genera el siguiente ID para una categoría dada.
+ * Busca todos los IDs existentes que empiecen por el prefijo,
+ * extrae el número, halla el máximo y suma 1.
+ * Ejemplo: con IV001 e IV002 devuelve IV003.
+ */
+async function generarID(categoria) {
     const pref = PREFIX[categoria] || "";
-    const usados = Object.values(productos)
-        .map(p => p.id)
-        .filter(id => id.startsWith(pref))
-        .map(id => parseInt(id.slice(pref.length), 10));
+    const productos = await obtenerProductos();
+    const usados = productos
+        .filter(item => item.id.startsWith(pref))
+        .map(item => parseInt(item.id.slice(pref.length), 10));
     const siguiente = (usados.length ? Math.max(...usados) : 0) + 1;
     return `${pref}${String(siguiente).padStart(3, "0")}`;
 }
 
-// Auto‑genera ID al cambiar categoría (si existe el select)
-if (selectCat && inputId) {
-    selectCat.addEventListener("change", () => {
-        inputId.value = generarID(selectCat.value);
-    });
-}
-
-// Muestra alerta de éxito (si existe)
+// Se muestra una alerta breve de éxito
 function showSuccess() {
     if (!alertSucc) return;
     alertSucc.style.display = "block";
@@ -88,11 +174,12 @@ function showSuccess() {
     }, 2000);
 }
 
-// Renderiza últimos productos (si existe su lista)
-function renderUltimos() {
+// Se renderiza los últimos siete productos en orden inverso
+async function renderUltimos() {
     if (!ultimosList) return;
+    const productos = await obtenerProductos();
     ultimosList.innerHTML = "";
-    const ultimos = Object.values(productos).slice(-7).reverse();
+    const ultimos = productos.slice(-7).reverse();
     ultimos.forEach(p => {
         const li = document.createElement("li");
         li.textContent = `${p.id} - ${p.nombre} (${p.categoria}) - $${p.precio.toLocaleString()} x${p.cantidad} - ${p.fecha} - ${p.estado}`;
@@ -101,65 +188,62 @@ function renderUltimos() {
     });
 }
 
-// Renderiza catálogo (si existe su contenedor)
-function renderCatalogo() {
+// Se renderiza el catálogo completo y aplica el filtro de categoría
+async function renderCatalogo() {
     if (!productList || !totalPriceP) return;
+    const productos = await obtenerProductos();
     productList.innerHTML = "";
     let total = 0;
     const filtro = filtroCatalogo?.value || "";
 
-    Object.values(productos).forEach(p => {
+    productos.forEach(p => {
         if (filtro && p.categoria !== filtro) return;
         total += p.precio * p.cantidad;
-
         const card = document.createElement("div");
-        card.className = "product-card";
+        card.className = "product-card fade-in-smooth";
         card.innerHTML = `
-        <div class="product-card-inner">
-            <div class="product-card-front">
-                <img src="${p.imagen}" alt="${p.nombre}" class="thumb">
-                <strong>${p.nombre}</strong>
-            </div>
-            <div class="product-card-back">
-                <p>${p.id}</p>
-                <p>${p.categoria}</p>
-                <p>$${p.precio.toLocaleString()} x${p.cantidad}</p>
-                <p>${p.fecha}</p>
-                <p>${p.estado}</p>
-            </div>
+      <div class="product-card-inner">
+        <div class="product-card-front">
+          <img src="${p.imagen}" alt="${p.nombre}" class="thumb">
+          <strong>${p.nombre}</strong>
         </div>
-            `;
+        <div class="product-card-back">
+          <p>${p.id}</p>
+          <p>${p.categoria}</p>
+          <p>$${p.precio.toLocaleString()} x${p.cantidad}</p>
+          <p>${p.fecha}</p>
+          <p>${p.estado}</p>
+        </div>
+      </div>
+    `;
         productList.appendChild(card);
     });
 
     totalPriceP.textContent = `Total: $${total.toLocaleString()}`;
 }
 
-// Renderiza lista de edición (si existe su lista)
-function renderEditar() {
+// Se renderiza la lista de edición con filtros y acciones
+async function renderEditar() {
     if (!editarLista) return;
+    const productos = await obtenerProductos();
     editarLista.innerHTML = "";
-
     const textFilter = filtroEditar?.value.toLowerCase() || "";
     const catFilter = filtroCategoriaEdit?.value || "";
-
     let total = 0;
 
-    Object.entries(productos).forEach(([key, p]) => {
+    productos.forEach(p => {
         const matchText = !textFilter || p.id.toLowerCase().includes(textFilter) || p.nombre.toLowerCase().includes(textFilter);
         const matchCat = !catFilter || p.categoria === catFilter;
-
         if (matchText && matchCat) {
             total += p.precio * p.cantidad;
-
             const li = document.createElement("li");
             li.innerHTML = `
         <strong>${p.nombre}</strong> (${p.id}) - ${p.categoria}<br>
         Cantidad: ${p.cantidad} | Precio: $${p.precio.toLocaleString()}<br>
-        <button onclick="modificarCantidad('${key}', 1)">+1</button>
-        <button onclick="modificarCantidad('${key}', -1)">-1</button>
-        <button onclick="editarProductoDesdeOtraPagina('${key}')">Editar</button>
-        <button onclick="eliminarProducto('${key}')">Eliminar</button>
+        <button onclick="modificarCantidad('${p.id}', 1)">+1</button>
+        <button onclick="modificarCantidad('${p.id}', -1)">-1</button>
+        <button onclick="editarProductoDesdeOtraPagina('${p.id}')">Editar</button>
+        <button onclick="eliminarProducto('${p.id}')">Eliminar</button>
       `;
             editarLista.appendChild(li);
         }
@@ -171,26 +255,20 @@ function renderEditar() {
     }
 }
 
-// Sumar/restar unidades
-function modificarCantidad(key, delta) {
-    productos[key].cantidad = Math.max(0, productos[key].cantidad + delta);
-    guardarProductos();
-    renderCatalogo();
-    renderEditar();
+// Se Asigna el evento para autogenerar ID al cambiar categoría
+if (selectCat && inputId) {
+    selectCat.addEventListener("change", async () => {
+        inputId.value = await generarID(selectCat.value);
+    });
 }
 
-// Eliminar producto
-function eliminarProducto(key) {
-    delete productos[key];
-    guardarProductos();
-    renderCatalogo();
-    renderEditar();
-    renderUltimos();
-}
+/* Manejo del evento de envío del formulario principal.
+Si el formulario está en modo edición, actualiza el producto existente.
+Si no, crea uno nuevo. Valida todos los campos antes de enviarlo.
+Al finalizar, actualiza toda la interfaz para reflejar los cambios.*/
 
-// Manejo del formulario (si existe)
 if (form) {
-    form.addEventListener("submit", e => {
+    form.addEventListener("submit", async e => {
         e.preventDefault();
         const nombre = form.querySelector("#nombre").value.trim();
         const categoria = selectCat.value;
@@ -203,7 +281,7 @@ if (form) {
         const imagen = form.querySelector("#imagenURL").value.trim();
 
         if (!id && categoria) {
-            id = generarID(categoria);
+            id = await generarID(categoria);
             inputId.value = id;
         }
 
@@ -212,65 +290,92 @@ if (form) {
             return;
         }
 
+        const producto = { id, nombre, categoria, precio, cantidad, fecha, estado, descripcion, imagen };
         const editKey = form.dataset.editKey;
+
         if (editKey) {
-            productos[editKey] = { id, nombre, categoria, precio, cantidad, fecha, estado, descripcion, imagen };
-            delete form.dataset.editKey;
-            form.querySelector("#btn-add").textContent = "Agregar";
+            // Actualiza el producto existente
+            await guardarProducto(producto, editKey);
         } else {
-            const newKey = "producto" + (Object.keys(productos).length + 1);
-            productos[newKey] = { id, nombre, categoria, precio, cantidad, fecha, estado, descripcion, imagen };
-            showSuccess();
+            // Crea un nuevo producto
+            await guardarProducto(producto);
         }
 
-        guardarProductos();
-        renderUltimos();
-        renderCatalogo();
-        renderEditar();
+        showSuccess();
         form.reset();
         inputId.value = "";
         selectCat.value = "";
+        delete form.dataset.editKey;
         form.classList.remove("modo-edicion");
+        document.getElementById("btn-add").textContent = "Agregar";
+
+        // Render según la página
+        renderizarSoloLoNecesario()
+
     });
 }
 
-// Función para editar desde otra página
-function editarProductoDesdeOtraPagina(key) {
-    localStorage.setItem("productoParaEditar", key);
+// Se guarda en localStorage la clave de edición y redirige
+function editarProductoDesdeOtraPagina(id) {
+    localStorage.setItem("productoParaEditar", id);
+    console.log("➡️ Producto enviado a formulario para edición:", id);
     window.location.href = "index.html";
 }
 
-// Si se llega desde otra página con un producto para editar
-if (form && localStorage.getItem("productoParaEditar")) {
-    const key = localStorage.getItem("productoParaEditar");
-    const p = productos[key];
-
-    if (p) {
-        document.getElementById("idProducto").value = p.id;
-        document.getElementById("nombre").value = p.nombre;
-        document.getElementById("categoria").value = p.categoria;
-        document.getElementById("precio").value = p.precio;
-        document.getElementById("cantidad").value = p.cantidad;
-        document.getElementById("fecha").value = p.fecha;
-        document.querySelector(`input[name="estado"][value="${p.estado}"]`).checked = true;
-        document.getElementById("descripcion").value = p.descripcion;
-        document.getElementById("imagenURL").value = p.imagen;
-
-        form.dataset.editKey = key;
-        document.getElementById("btn-add").textContent = "Actualizar";
-        form.classList.add("modo-edicion");
+// Se carga los datos en el formulario si proviene de editar
+window.addEventListener("DOMContentLoaded", async () => {
+    const id = localStorage.getItem("productoParaEditar");
+    if (form && id) {
+        const productos = await obtenerProductos();
+        const p = productos.find(item => item.id === id);
+        if (p) {
+            form.querySelector("#idProducto").value = p.id;
+            form.querySelector("#nombre").value = p.nombre;
+            form.querySelector("#categoria").value = p.categoria;
+            form.querySelector("#precio").value = p.precio;
+            form.querySelector("#cantidad").value = p.cantidad;
+            form.querySelector("#fecha").value = p.fecha;
+            form.querySelector(`input[name="estado"][value="${p.estado}"]`).checked = true;
+            form.querySelector("#descripcion").value = p.descripcion;
+            form.querySelector("#imagenURL").value = p.imagen;
+            form.dataset.editKey = p.id;
+            form.classList.add("modo-edicion");
+            document.getElementById("btn-add").textContent = "Actualizar";
+        }
+        localStorage.removeItem("productoParaEditar");
     }
+    renderizarTodo();
+});
 
-    localStorage.removeItem("productoParaEditar");
-}
-
-// Listeners para filtros
+// Se asigna los filtros para catálogo y edición
 if (filtroCatalogo) filtroCatalogo.addEventListener("change", renderCatalogo);
 if (filtroEditar) filtroEditar.addEventListener("input", renderEditar);
 if (filtroCategoriaEdit) filtroCategoriaEdit.addEventListener("change", renderEditar);
 
-// Inicialización segura
-guardarProductos();
-renderUltimos();
-renderCatalogo();
-renderEditar();
+
+/*Inicialización de la app:
+ *  - Expone funciones globales para botones onclick
+ *  - Lanza renderizado inicial*/
+
+window.modificarCantidad = modificarCantidad;
+window.eliminarProducto = eliminarProducto;
+window.editarProductoDesdeOtraPagina = editarProductoDesdeOtraPagina;
+
+function renderizarTodo() {
+    renderUltimos();
+    renderCatalogo();
+    renderEditar();
+}
+
+/*
+🔎 DEBUG / DESARROLLO
+-----------------------
+Esto permite ver en consola todos los productos del servidor
+cuando se carga el proyecto. Úsalo solo durante pruebas.
+
+Descomenta para usar:
+----------------------
+*/
+// fetch("http://localhost:3000/productos")
+//     .then(res => res.json())
+//     .then(data => console.log("Productos actuales (carga inicial):", data));

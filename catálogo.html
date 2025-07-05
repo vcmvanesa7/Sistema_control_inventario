@@ -57,6 +57,10 @@
                 window.location.href = url;
             }, 400);
         }
+        // Aplica la clase fade-in al cargar para que aparezca suave
+        window.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("fade-in");
+        });
 
         // Detecta la página actual y aplica "active" al enlace correspondiente (soporte para tildes)
         const path = decodeURIComponent(window.location.pathname);
@@ -71,7 +75,8 @@
     </script>
 
 
-    <script src="./script.js"></script>
+    <script type="module" src="script.js"></script>
+
 </body>
 
 </html>

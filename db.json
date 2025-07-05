@@ -1,0 +1,48 @@
+{
+  "productos": [
+    {
+      "id": "IV001",
+      "nombre": "Saxofón Alto",
+      "categoria": "Instrumentos de Viento",
+      "precio": 350000,
+      "cantidad": 8,
+      "fecha": "2025-06-01",
+      "estado": "Nuevo",
+      "descripcion": "Saxofón de latón profesional.",
+      "imagen": "https://tse3.mm.bing.net/th/id/OIP.Zhd27gKoPSQ1a1FE1JO2igAAAA?rs=1&pid=ImgDetMain"
+    },
+    {
+      "id": "IP001",
+      "nombre": "Tambor Africano",
+      "categoria": "Instrumentos de Percusión",
+      "precio": 120000,
+      "cantidad": 8,
+      "fecha": "2025-05-20",
+      "estado": "Nuevo",
+      "descripcion": "Tambor manual de madera y piel auténtica.",
+      "imagen": "https://thumbs.dreamstime.com/b/tambor-africano-25975560.jpg"
+    },
+    {
+      "id": "IC001",
+      "nombre": "Violín Clásico",
+      "categoria": "Instrumentos de Cuerda",
+      "precio": 450000,
+      "cantidad": 3,
+      "fecha": "2025-04-15",
+      "estado": "Usado",
+      "descripcion": "Violín con acabado barnizado, estado bueno.",
+      "imagen": "https://thumbs.dreamstime.com/z/violin-2742015.jpg?w=768"
+    },
+    {
+      "id": "IE001",
+      "nombre": "Guitarra Eléctrica",
+      "categoria": "Instrumentos Eléctricos",
+      "precio": 3450000,
+      "cantidad": 2,
+      "fecha": "2025-06-30",
+      "estado": "Nuevo",
+      "descripcion": "Marca Strinberg",
+      "imagen": "https://www.electronicajaponesa.com/wp-content/uploads/2021/08/STS100-WH.jpg"
+    }
+  ]
+}

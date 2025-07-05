@@ -1,0 +1,23 @@
+{
+  "name": "sistema_control_inventario",
+  "version": "1.0.0",
+  "description": "![HTML5](assets/img/Previsualización-HTML.png) ![CSS3](assets/img/previsualización-CSS.png) ![JavaScript](assets/img/Previsualización-JS.png)",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcmvanesa7/Sistema_control_inventario.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vcmvanesa7/Sistema_control_inventario/issues"
+  },
+  "homepage": "https://github.com/vcmvanesa7/Sistema_control_inventario#readme",
+  "devDependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
+}
