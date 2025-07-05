@@ -86,12 +86,6 @@ Facilitar el manejo de errores con catch
 
 ---
 
-## 🔗 Demo en Vivo
-
-🚧 *(agregar URL Netlify cuando esté publicado)*
-
----
-
 ## 🛠️ Tecnologías Utilizadas
 
 - HTML5 semántico  
