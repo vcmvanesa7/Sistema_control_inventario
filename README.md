@@ -161,7 +161,7 @@ Abre los archivos `index.html`, `catálogo.html` y `actualizar.html` con **Live 
 
 ## 🎨 Diseño y UX
 
-- Paleta de colores sobria (blanco, gris oscuro, dorado)  
+- Paleta de colores sobria (blanco, gris oscuro, amarillo)  
 - Layout responsive y moderno  
 - Navbar lateral fijo  
 - Scroll en secciones específicas para mejor usabilidad  
